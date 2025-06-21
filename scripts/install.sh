@@ -847,6 +847,11 @@ echo " - Removing any cached official coolify images"
 docker rmi ghcr.io/coollabsio/coolify:latest 2>/dev/null || true
 docker rmi coollabsio/coolify:latest 2>/dev/null || true
 
+# Also stop and remove the existing coolify container to force recreation with new image
+echo " - Stopping and removing existing coolify container if present"
+docker stop coolify 2>/dev/null || true
+docker rm coolify 2>/dev/null || true
+
 echo " - Coolify installed successfully."
 rm -f $ENV_FILE-$DATE
 
@@ -854,6 +859,10 @@ echo " - Waiting for 20 seconds for Coolify (database migrations) to be ready."
 getAJoke
 
 sleep 20
+
+# Show which image is actually running
+echo " - Verifying running container:"
+docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}"
 echo -e "\033[0;35m
    ____                            _         _       _   _                 _
   / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
