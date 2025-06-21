@@ -827,6 +827,10 @@ if [[ $- == *x* ]]; then
 else
     bash /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-ghcr.io}"
 fi
+
+# Replace main coolify image reference again after upgrade.sh (which downloads fresh files)
+sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
+
 echo " - Coolify installed successfully."
 rm -f $ENV_FILE-$DATE
 
