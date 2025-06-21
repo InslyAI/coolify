@@ -32,7 +32,7 @@ fi
 
 echo -e "Welcome to Coolify Installer!"
 echo -e "This script will install everything for you. Sit back and relax."
-echo -e "Source code: https://github.com/coollabsio/coolify/blob/main/scripts/install.sh\n"
+echo -e "Source code: https://github.com/"
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
