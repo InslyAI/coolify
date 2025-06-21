@@ -30,10 +30,9 @@ if [ $EUID != 0 ]; then
     exit
 fi
 
-echo -e "Welcome to Coolify Installer (Custom Version by @kivilaid)!"
-echo -e "This script will install a custom version of Coolify with the version display hidden."
-echo "Source code: github.com/kivilaid/coolify/blob/v4.x/scripts/install.sh"
-echo ""
+echo -e "Welcome to Coolify Installer!"
+echo -e "This script will install everything for you. Sit back and relax."
+echo -e "Source code: https://github.com/coollabsio/coolify/blob/main/scripts/install.sh\n"
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
@@ -315,12 +314,11 @@ fi
 echo -e "---------------------------------------------"
 echo "| Operating System  | $OS_TYPE $OS_VERSION"
 echo "| Docker            | $DOCKER_VERSION"
-echo "| Coolify           | $LATEST_VERSION (Custom)"
+echo "| Coolify           | $LATEST_VERSION"
 echo "| Helper            | $LATEST_HELPER_VERSION"
 echo "| Realtime          | $LATEST_REALTIME_VERSION"
 echo "| Docker Pool       | $DOCKER_ADDRESS_POOL_BASE (size $DOCKER_ADDRESS_POOL_SIZE)"
 echo "| Registry URL      | $REGISTRY_URL"
-echo "| Custom Image      | ghcr.io/kivilaid/coolify"
 echo -e "---------------------------------------------\n"
 echo -e "1. Installing required packages (curl, wget, git, jq, openssl). "
 
@@ -433,7 +431,7 @@ if [ "$SSH_PERMIT_ROOT_LOGIN" = "yes" ] || [ "$SSH_PERMIT_ROOT_LOGIN" = "without
     echo " - SSH PermitRootLogin is enabled."
 else
     echo " - SSH PermitRootLogin is disabled."
-    echo "   If you have problems with SSH, please read this: coolify.io/docs/knowledge-base/server/openssh"
+    echo "   If you have problems with SSH, please read this: https://coolify.io/docs/knowledge-base/server/openssh"
 fi
 
 # Detect if docker is installed via snap
@@ -483,7 +481,7 @@ install_docker_manually() {
     esac
     if ! [ -x "$(command -v docker)" ]; then
         echo "Docker installation failed."
-        echo "   Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+        echo "   Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
         exit 1
     else
         echo "Docker installed successfully."
@@ -498,7 +496,7 @@ if ! [ -x "$(command -v docker)" ]; then
         dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -547,7 +545,7 @@ if ! [ -x "$(command -v docker)" ]; then
         fi
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -708,13 +706,6 @@ curl -fsSL $CDN/docker-compose.prod.yml -o /data/coolify/source/docker-compose.p
 curl -fsSL $CDN/.env.production -o /data/coolify/source/.env.production
 curl -fsSL $CDN/upgrade.sh -o /data/coolify/source/upgrade.sh
 
-# Replace main coolify image reference to use custom Docker image
-# Only replace the main coolify image, keep helper and realtime as official
-echo " - Replacing image references to use custom Docker image"
-sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
-echo " - Verifying image replacement..."
-grep "coolify:" /data/coolify/source/docker-compose.prod.yml | head -2
-
 echo -e "6. Make backup of .env to .env-$DATE"
 
 # Copy .env.example if .env does not exist
@@ -827,46 +818,11 @@ echo -e " - It could take a while based on your server's performance, network sp
 echo -e " - Please wait."
 getAJoke
 
-echo " - Running upgrade.sh with:"
-echo "   LATEST_VERSION: ${LATEST_VERSION:-latest}"
-echo "   LATEST_HELPER_VERSION: ${LATEST_HELPER_VERSION:-latest}"
-echo "   REGISTRY_URL: ${REGISTRY_URL:-ghcr.io}"
-
 if [[ $- == *x* ]]; then
     bash -x /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-ghcr.io}"
 else
     bash /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-ghcr.io}"
 fi
-
-echo " - Upgrade.sh completed"
-
-# Replace main coolify image reference again after upgrade.sh (which downloads fresh files)
-echo " - Applying custom image replacement after upgrade.sh"
-sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
-echo " - Final image configuration:"
-grep "coolify:" /data/coolify/source/docker-compose.prod.yml | head -2
-
-# Force pull the custom image to ensure we have the latest version
-echo " - Pulling custom Docker image ghcr.io/kivilaid/coolify:latest"
-if ! docker pull ghcr.io/kivilaid/coolify:latest; then
-    echo "ERROR: Failed to pull custom image!"
-    echo "Trying to continue with existing image..."
-else
-    echo " - Custom image pulled successfully"
-    # Verify the image exists
-    docker images | grep "kivilaid/coolify" | grep "latest" || echo "WARNING: Image not found in local registry"
-fi
-
-# Remove any existing coolify images to ensure fresh start
-echo " - Removing any cached official coolify images"
-docker rmi ghcr.io/coollabsio/coolify:latest 2>/dev/null || true
-docker rmi coollabsio/coolify:latest 2>/dev/null || true
-
-# Also stop and remove the existing coolify container to force recreation with new image
-echo " - Stopping and removing existing coolify container if present"
-docker stop coolify 2>/dev/null || true
-docker rm coolify 2>/dev/null || true
-
 echo " - Coolify installed successfully."
 rm -f $ENV_FILE-$DATE
 
@@ -874,52 +830,21 @@ echo " - Waiting for 20 seconds for Coolify (database migrations) to be ready."
 getAJoke
 
 sleep 20
-
-# Show which image is actually running
-echo " - Verifying running containers:"
-docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
-
-# Check if coolify container is actually running
-if ! docker ps | grep -q "coolify"; then
-    echo ""
-    echo "WARNING: Coolify container is not running!"
-    echo "Checking container logs:"
-    docker logs coolify --tail 50 2>&1 || echo "No logs available"
-    echo ""
-    echo "Checking all containers:"
-    docker ps -a --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
-    
-    echo ""
-    echo "Attempting to restart Coolify..."
-    cd /data/coolify/source
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml down
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-    
-    echo ""
-    echo "Waiting 10 seconds for restart..."
-    sleep 10
-    
-    echo "Final container status:"
-    docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
-fi
-echo -e "\033[0;35m"
-echo "   ____                            _         _       _   _                 _"
-echo "  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |"
-echo " | |   / _ \| '_ \ / _\` | '__/ _\` | __| | | | |/ _\` | __| |/ _ \| '_ \/ __| |"
-echo " | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|"
-echo "  \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)"
-echo "                   |___/"
-echo -e "\033[0m"
+echo -e "\033[0;35m
+   ____                            _         _       _   _                 _
+  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
+ | |   / _ \| '_ \ / _\` | '__/ _\` | __| | | | |/ _\` | __| |/ _ \| '_ \/ __| |
+ | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|
+  \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)
+                   |___/
+\033[0m"
 
 IPV4_PUBLIC_IP=$(curl -4s https://ifconfig.io || true)
 IPV6_PUBLIC_IP=$(curl -6s https://ifconfig.io || true)
 
-echo ""
-echo "Your instance is ready to use!"
-echo ""
+echo -e "\nYour instance is ready to use!\n"
 if [ -n "$IPV4_PUBLIC_IP" ]; then
-    IPV4_ACCESS="http://$IPV4_PUBLIC_IP:8000"
-    echo "You can access Coolify through your Public IPV4: $IPV4_ACCESS"
+    echo -e "You can access Coolify through your Public IPV4: http://$(curl -4s https://ifconfig.io):8000"
 fi
 if [ -n "$IPV6_PUBLIC_IP" ]; then
     echo -e "You can access Coolify through your Public IPv6: http://[$IPV6_PUBLIC_IP]:8000"
@@ -931,16 +856,12 @@ PRIVATE_IPS=$(hostname -I 2>/dev/null || ip -o addr show scope global | awk '{pr
 set -e
 
 if [ -n "$PRIVATE_IPS" ]; then
-    echo ""
-echo "If your Public IP is not accessible, you can use the following Private IPs:"
-echo ""
+    echo -e "\nIf your Public IP is not accessible, you can use the following Private IPs:\n"
     for IP in $PRIVATE_IPS; do
         if [ "$IP" != "$DEFAULT_PRIVATE_IP" ]; then
             echo -e "http://$IP:8000"
         fi
     done
 fi
-echo ""
-echo "WARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager)."
-echo ""
+echo -e "\nWARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager).\n"
 cp /data/coolify/source/.env /data/coolify/source/.env.backup
