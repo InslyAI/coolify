@@ -827,11 +827,18 @@ echo -e " - It could take a while based on your server's performance, network sp
 echo -e " - Please wait."
 getAJoke
 
+echo " - Running upgrade.sh with:"
+echo "   LATEST_VERSION: ${LATEST_VERSION:-latest}"
+echo "   LATEST_HELPER_VERSION: ${LATEST_HELPER_VERSION:-latest}"
+echo "   REGISTRY_URL: ${REGISTRY_URL:-ghcr.io}"
+
 if [[ $- == *x* ]]; then
     bash -x /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-ghcr.io}"
 else
     bash /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-ghcr.io}"
 fi
+
+echo " - Upgrade.sh completed"
 
 # Replace main coolify image reference again after upgrade.sh (which downloads fresh files)
 echo " - Applying custom image replacement after upgrade.sh"
@@ -841,7 +848,14 @@ grep "coolify:" /data/coolify/source/docker-compose.prod.yml | head -2
 
 # Force pull the custom image to ensure we have the latest version
 echo " - Pulling custom Docker image ghcr.io/kivilaid/coolify:latest"
-docker pull ghcr.io/kivilaid/coolify:latest
+if ! docker pull ghcr.io/kivilaid/coolify:latest; then
+    echo "ERROR: Failed to pull custom image!"
+    echo "Trying to continue with existing image..."
+else
+    echo " - Custom image pulled successfully"
+    # Verify the image exists
+    docker images | grep "kivilaid/coolify" | grep "latest" || echo "WARNING: Image not found in local registry"
+fi
 
 # Remove any existing coolify images to ensure fresh start
 echo " - Removing any cached official coolify images"
@@ -862,8 +876,32 @@ getAJoke
 sleep 20
 
 # Show which image is actually running
-echo " - Verifying running container:"
-docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}"
+echo " - Verifying running containers:"
+docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+
+# Check if coolify container is actually running
+if ! docker ps | grep -q "coolify"; then
+    echo ""
+    echo "WARNING: Coolify container is not running!"
+    echo "Checking container logs:"
+    docker logs coolify --tail 50 2>&1 || echo "No logs available"
+    echo ""
+    echo "Checking all containers:"
+    docker ps -a --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+    
+    echo ""
+    echo "Attempting to restart Coolify..."
+    cd /data/coolify/source
+    docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+    
+    echo ""
+    echo "Waiting 10 seconds for restart..."
+    sleep 10
+    
+    echo "Final container status:"
+    docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+fi
 echo -e "\033[0;35m"
 echo "   ____                            _         _       _   _                 _"
 echo "  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |"
