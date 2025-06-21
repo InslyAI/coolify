@@ -30,9 +30,9 @@ if [ $EUID != 0 ]; then
     exit
 fi
 
-echo -e "Welcome to Coolify Installer!"
-echo -e "This script will install everything for you. Sit back and relax."
-echo -e "Source code: https://github.com/"
+echo -e "Welcome to Coolify Installer (Custom Version by @kivilaid)!"
+echo -e "This script will install a custom version of Coolify with the version display hidden."
+echo -e "Source code: https://github.com/kivilaid/coolify/blob/v4.x/scripts/install.sh\n"
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
@@ -314,11 +314,12 @@ fi
 echo -e "---------------------------------------------"
 echo "| Operating System  | $OS_TYPE $OS_VERSION"
 echo "| Docker            | $DOCKER_VERSION"
-echo "| Coolify           | $LATEST_VERSION"
+echo "| Coolify           | $LATEST_VERSION (Custom)"
 echo "| Helper            | $LATEST_HELPER_VERSION"
 echo "| Realtime          | $LATEST_REALTIME_VERSION"
 echo "| Docker Pool       | $DOCKER_ADDRESS_POOL_BASE (size $DOCKER_ADDRESS_POOL_SIZE)"
 echo "| Registry URL      | $REGISTRY_URL"
+echo "| Custom Image      | ghcr.io/kivilaid/coolify"
 echo -e "---------------------------------------------\n"
 echo -e "1. Installing required packages (curl, wget, git, jq, openssl). "
 
