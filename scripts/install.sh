@@ -32,7 +32,8 @@ fi
 
 echo -e "Welcome to Coolify Installer (Custom Version by @kivilaid)!"
 echo -e "This script will install a custom version of Coolify with the version display hidden."
-echo -e "Source code: https://github.com/kivilaid/coolify/blob/v4.x/scripts/install.sh\n"
+echo "Source code: github.com/kivilaid/coolify/blob/v4.x/scripts/install.sh"
+echo ""
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
@@ -432,7 +433,7 @@ if [ "$SSH_PERMIT_ROOT_LOGIN" = "yes" ] || [ "$SSH_PERMIT_ROOT_LOGIN" = "without
     echo " - SSH PermitRootLogin is enabled."
 else
     echo " - SSH PermitRootLogin is disabled."
-    echo "   If you have problems with SSH, please read this: https://coolify.io/docs/knowledge-base/server/openssh"
+    echo "   If you have problems with SSH, please read this: coolify.io/docs/knowledge-base/server/openssh"
 fi
 
 # Detect if docker is installed via snap
@@ -482,7 +483,7 @@ install_docker_manually() {
     esac
     if ! [ -x "$(command -v docker)" ]; then
         echo "Docker installation failed."
-        echo "   Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
+        echo "   Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
         exit 1
     else
         echo "Docker installed successfully."
@@ -497,7 +498,7 @@ if ! [ -x "$(command -v docker)" ]; then
         dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -546,7 +547,7 @@ if ! [ -x "$(command -v docker)" ]; then
         fi
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -879,7 +880,8 @@ echo ""
 echo "Your instance is ready to use!"
 echo ""
 if [ -n "$IPV4_PUBLIC_IP" ]; then
-    echo -e "You can access Coolify through your Public IPV4: http://$(curl -4s https://ifconfig.io):8000"
+    IPV4_ACCESS="http://$IPV4_PUBLIC_IP:8000"
+    echo "You can access Coolify through your Public IPV4: $IPV4_ACCESS"
 fi
 if [ -n "$IPV6_PUBLIC_IP" ]; then
     echo -e "You can access Coolify through your Public IPv6: http://[$IPV6_PUBLIC_IP]:8000"
