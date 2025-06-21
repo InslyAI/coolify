@@ -706,10 +706,9 @@ curl -fsSL $CDN/docker-compose.prod.yml -o /data/coolify/source/docker-compose.p
 curl -fsSL $CDN/.env.production -o /data/coolify/source/.env.production
 curl -fsSL $CDN/upgrade.sh -o /data/coolify/source/upgrade.sh
 
-# Replace image references to use custom Docker images
-sed -i "s|coollabsio/coolify|kivilaid/coolify|g" /data/coolify/source/docker-compose.prod.yml
-sed -i "s|coollabsio/coolify-helper|kivilaid/coolify-helper|g" /data/coolify/source/upgrade.sh
-sed -i "s|coollabsio/coolify-realtime|kivilaid/coolify-realtime|g" /data/coolify/source/docker-compose.prod.yml
+# Replace main coolify image reference to use custom Docker image
+# Only replace the main coolify image, keep helper and realtime as official
+sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
 
 echo -e "6. Make backup of .env to .env-$DATE"
 
