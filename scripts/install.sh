@@ -863,19 +863,21 @@ sleep 20
 # Show which image is actually running
 echo " - Verifying running container:"
 docker ps --filter "name=coolify" --format "table {{.Names}}\t{{.Image}}"
-echo -e "\033[0;35m
-   ____                            _         _       _   _                 _
-  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
- | |   / _ \| '_ \ / _\` | '__/ _\` | __| | | | |/ _\` | __| |/ _ \| '_ \/ __| |
- | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|
-  \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)
-                   |___/
-\033[0m"
+echo -e "\033[0;35m"
+echo "   ____                            _         _       _   _                 _"
+echo "  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |"
+echo " | |   / _ \| '_ \ / _\` | '__/ _\` | __| | | | |/ _\` | __| |/ _ \| '_ \/ __| |"
+echo " | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|"
+echo "  \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)"
+echo "                   |___/"
+echo -e "\033[0m"
 
 IPV4_PUBLIC_IP=$(curl -4s https://ifconfig.io || true)
 IPV6_PUBLIC_IP=$(curl -6s https://ifconfig.io || true)
 
-echo -e "\nYour instance is ready to use!\n"
+echo ""
+echo "Your instance is ready to use!"
+echo ""
 if [ -n "$IPV4_PUBLIC_IP" ]; then
     echo -e "You can access Coolify through your Public IPV4: http://$(curl -4s https://ifconfig.io):8000"
 fi
@@ -889,12 +891,16 @@ PRIVATE_IPS=$(hostname -I 2>/dev/null || ip -o addr show scope global | awk '{pr
 set -e
 
 if [ -n "$PRIVATE_IPS" ]; then
-    echo -e "\nIf your Public IP is not accessible, you can use the following Private IPs:\n"
+    echo ""
+echo "If your Public IP is not accessible, you can use the following Private IPs:"
+echo ""
     for IP in $PRIVATE_IPS; do
         if [ "$IP" != "$DEFAULT_PRIVATE_IP" ]; then
             echo -e "http://$IP:8000"
         fi
     done
 fi
-echo -e "\nWARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager).\n"
+echo ""
+echo "WARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager)."
+echo ""
 cp /data/coolify/source/.env /data/coolify/source/.env.backup
