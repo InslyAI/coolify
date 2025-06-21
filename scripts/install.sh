@@ -709,7 +709,10 @@ curl -fsSL $CDN/upgrade.sh -o /data/coolify/source/upgrade.sh
 
 # Replace main coolify image reference to use custom Docker image
 # Only replace the main coolify image, keep helper and realtime as official
+echo " - Replacing image references to use custom Docker image"
 sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
+echo " - Verifying image replacement..."
+grep "coolify:" /data/coolify/source/docker-compose.prod.yml | head -2
 
 echo -e "6. Make backup of .env to .env-$DATE"
 
@@ -830,7 +833,19 @@ else
 fi
 
 # Replace main coolify image reference again after upgrade.sh (which downloads fresh files)
+echo " - Applying custom image replacement after upgrade.sh"
 sed -i "s|coollabsio/coolify:|kivilaid/coolify:|g" /data/coolify/source/docker-compose.prod.yml
+echo " - Final image configuration:"
+grep "coolify:" /data/coolify/source/docker-compose.prod.yml | head -2
+
+# Force pull the custom image to ensure we have the latest version
+echo " - Pulling custom Docker image ghcr.io/kivilaid/coolify:latest"
+docker pull ghcr.io/kivilaid/coolify:latest
+
+# Remove any existing coolify images to ensure fresh start
+echo " - Removing any cached official coolify images"
+docker rmi ghcr.io/coollabsio/coolify:latest 2>/dev/null || true
+docker rmi coollabsio/coolify:latest 2>/dev/null || true
 
 echo " - Coolify installed successfully."
 rm -f $ENV_FILE-$DATE
