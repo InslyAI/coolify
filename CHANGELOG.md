@@ -2,7 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.0-beta.419] - 2025-06-16
+## [unreleased]
+
+### 🚀 Features
+
+- Customize install script text for custom version
+- Rebrand Coolify to Insly
+- Remove Feedback and Sponsor us menu items
+
+### 🐛 Bug Fixes
+
+- Apply image replacement after upgrade.sh overwrites files
+- Add debugging and force pull for custom image
+- Ensure fresh container with custom image
+- Improve script formatting for better terminal compatibility
+- Remove https protocol from URLs for better compatibility
+- Add comprehensive debugging and restart logic
+- Update Docker image reference in production compose file
+- Update install script messages and URLs for clarity
+- Update install script URLs for accuracy and consistency
+- Update Docker image registry to kivilaid/coolify
+
+## [4.0.0-beta.419-custom] - 2025-06-21
+
+### 🚀 Features
+
+- *(core)* Set custom API rate limit (#5984)
+
+### 🐛 Bug Fixes
+
+- Only replace main coolify image, keep official helper and realtime images
+
+### ⚙️ Miscellaneous Tasks
+
+- *(navbar)* Comment out version component in navbar
+- *(package)* Add packageManager field to package.json and update install script to replace image references with custom Docker images
+
+## [4.0.0-beta.419] - 2025-06-17
 
 ### 🚀 Features
 
@@ -203,6 +239,7 @@ All notable changes to this project will be documented in this file.
 
 - Update changelog
 - *(service)* Add new docs link for zipline (#5912)
+- Update changelog
 - Update changelog
 - Update changelog
 
