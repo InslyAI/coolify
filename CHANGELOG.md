@@ -7,9 +7,11 @@ All notable changes to this project will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Correct GitHub Container Registry image paths
+- Use full image path for GitHub Container Registry
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 
