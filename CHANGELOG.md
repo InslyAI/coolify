@@ -25,12 +25,15 @@ All notable changes to this project will be documented in this file.
 - Update changelog
 - Update changelog
 - Update changelog
+- Update changelog
 
 ### ⚙️ Miscellaneous Tasks
 
 - Trigger production build
 - Remove trigger file
 - Remove unnecessary GitHub workflows
+- Remove GitHub issue/PR management workflows
+- Trigger build with favicon update
 
 ## [andy] - 2025-06-26
 
