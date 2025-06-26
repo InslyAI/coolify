@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
+- Upgrade dialog shows correct version for custom registries
+
+### 📚 Documentation
+
+- Update changelog
+
+## [insly-beta.2] - 2025-06-26
+
+### 🐛 Bug Fixes
+
 - Use docker compose directly for custom registry upgrades
 - Improve version checking for custom registries
 
