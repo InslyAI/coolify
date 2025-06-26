@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### 🐛 Bug Fixes
+
+- Use docker compose directly for custom registry upgrades
+
+## [insly-beta.1] - 2025-06-26
+
 ### 🚀 Features
 
 - Add Linux-only build workflows
@@ -20,6 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 - Update changelog
