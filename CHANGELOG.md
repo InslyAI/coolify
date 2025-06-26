@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### 🚀 Features
+
+- Add Linux-only build workflows
+
 ### 🐛 Bug Fixes
 
 - Correct GitHub Container Registry image paths
@@ -12,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 - Update changelog
