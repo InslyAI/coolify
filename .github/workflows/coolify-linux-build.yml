@@ -1,0 +1,80 @@
+name: Linux Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["v4.x"]
+    paths-ignore:
+      - .github/workflows/coolify-helper.yml
+      - .github/workflows/coolify-helper-next.yml
+      - .github/workflows/coolify-realtime.yml
+      - .github/workflows/coolify-realtime-next.yml
+      - docker/coolify-helper/Dockerfile
+      - docker/coolify-realtime/Dockerfile
+      - docker/testing-host/Dockerfile
+      - templates/**
+      - CHANGELOG.md
+      - '*.md'
+
+env:
+  GITHUB_REGISTRY: ghcr.io
+  IMAGE_NAME: "coolify"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GITHUB_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Version
+        id: version
+        run: |
+          echo "VERSION=$(docker run --rm -v "$(pwd):/app" -w /app php:8.2-alpine3.16 php bootstrap/getVersion.php)" >> $GITHUB_OUTPUT
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.version.outputs.VERSION }}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=Insly
+            org.opencontainers.image.description=Self-hosted alternative to Heroku/Netlify/Vercel
+            org.opencontainers.image.vendor=Insly
+            maintainer=@kivilaid
+
+      - name: Build and Push Linux Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+          
+      - name: Verify Image
+        run: |
+          echo "Image pushed successfully:"
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo "Registry: ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}"
