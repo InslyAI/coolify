@@ -210,6 +210,73 @@ function get_latest_version_of_coolify(): string
     }
 }
 
+function isUsingCustomRegistry(): bool
+{
+    $imageName = config('constants.coolify.image_name', 'coollabsio/coolify');
+    
+    // Check if we're not using the official coollabsio registry
+    return !str_contains($imageName, 'coollabsio');
+}
+
+function getLatestVersionFromGitHub(): ?string
+{
+    try {
+        $registryUrl = config('constants.coolify.registry_url', 'ghcr.io');
+        $imageName = config('constants.coolify.image_name', 'kivilaid/coolify');
+        
+        // For GitHub Container Registry, we need to use a different approach
+        // GitHub doesn't expose the Docker Registry API directly
+        // We'll use the GitHub API to get releases or tags
+        $parts = explode('/', $imageName);
+        if (count($parts) >= 2) {
+            $owner = $parts[0];
+            $repo = $parts[1];
+            
+            // Try GitHub API for releases first
+            $response = Http::timeout(10)->get("https://api.github.com/repos/{$owner}/{$repo}/releases/latest");
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                $tagName = data_get($data, 'tag_name');
+                if ($tagName) {
+                    // Remove 'v' prefix if present
+                    return ltrim($tagName, 'v');
+                }
+            }
+            
+            // If no releases, try tags
+            $response = Http::timeout(10)->get("https://api.github.com/repos/{$owner}/{$repo}/tags");
+            
+            if ($response->successful()) {
+                $tags = $response->json();
+                
+                // Extract tag names and filter for semantic versions
+                $versions = collect($tags)
+                    ->pluck('name')
+                    ->map(function ($tag) {
+                        // Remove 'v' prefix if present
+                        return ltrim($tag, 'v');
+                    })
+                    ->filter(function ($tag) {
+                        // Match semantic version pattern (e.g., 4.0.0-beta.419)
+                        return preg_match('/^\d+\.\d+\.\d+(-.*)?$/', $tag);
+                    })
+                    ->sort(function ($a, $b) {
+                        return version_compare($b, $a); // Sort descending
+                    })
+                    ->values();
+                
+                return $versions->first();
+            }
+        }
+        
+        return null;
+    } catch (\Throwable $e) {
+        ray($e->getMessage());
+        return null;
+    }
+}
+
 function generate_random_name(?string $cuid = null): string
 {
     $generator = new \Nubs\RandomNameGenerator\All(

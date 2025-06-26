@@ -9,6 +9,7 @@ return [
         'autoupdate' => env('AUTOUPDATE'),
         'base_config_path' => env('BASE_CONFIG_PATH', '/data/coolify'),
         'registry_url' => env('REGISTRY_URL', 'ghcr.io'),
+        'image_name' => env('IMAGE_NAME', 'coollabsio/coolify'),
         'helper_image' => env('HELPER_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/coolify-helper'),
         'realtime_image' => env('REALTIME_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/coolify-realtime'),
         'is_windows_docker_desktop' => env('IS_WINDOWS_DOCKER_DESKTOP', false),

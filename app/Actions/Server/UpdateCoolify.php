@@ -52,7 +52,15 @@ class UpdateCoolify
     {
         PullHelperImageJob::dispatch($this->server);
 
-        $image = config('constants.coolify.registry_url').'/coollabsio/coolify:'.$this->latestVersion;
+        // Build the correct image path based on registry
+        if (isUsingCustomRegistry()) {
+            $registryUrl = config('constants.coolify.registry_url', 'ghcr.io');
+            $imageName = config('constants.coolify.image_name', 'kivilaid/coolify');
+            $image = "{$registryUrl}/{$imageName}:{$this->latestVersion}";
+        } else {
+            $image = config('constants.coolify.registry_url').'/coollabsio/coolify:'.$this->latestVersion;
+        }
+        
         instant_remote_process(["docker pull -q $image"], $this->server, false);
 
         remote_process([
