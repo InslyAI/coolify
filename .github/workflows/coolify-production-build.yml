@@ -50,6 +50,10 @@ jobs:
           push: true
           tags: |
             ${{ env.GITHUB_REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=Insly - Self-hosted alternative to Heroku/Netlify/Vercel
+            org.opencontainers.image.licenses=Apache-2.0
 
   aarch64:
     runs-on: [self-hosted, arm64]
@@ -81,6 +85,10 @@ jobs:
           push: true
           tags: |
             ${{ env.GITHUB_REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}-aarch64
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=Insly - Self-hosted alternative to Heroku/Netlify/Vercel
+            org.opencontainers.image.licenses=Apache-2.0
 
   merge-manifest:
     runs-on: ubuntu-latest

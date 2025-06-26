@@ -1,0 +1,46 @@
+name: Manual GHCR Fix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix-ghcr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+      - name: Build and push with docker CLI
+        run: |
+          # Create a simple test Dockerfile
+          cat > Dockerfile.test << 'EOF'
+          FROM alpine:latest
+          LABEL org.opencontainers.image.source="https://github.com/${{ github.repository }}"
+          LABEL org.opencontainers.image.description="Test image for Insly"
+          RUN echo "test"
+          EOF
+          
+          # Build and tag
+          docker build -f Dockerfile.test -t ghcr.io/${{ github.repository_owner }}/coolify:test-cli .
+          
+          # Push
+          docker push ghcr.io/${{ github.repository_owner }}/coolify:test-cli
+          
+      - name: Try with buildx
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            -f Dockerfile.test \
+            -t ghcr.io/${{ github.repository_owner }}/coolify:test-buildx \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --push \
+            .
