@@ -21,6 +21,9 @@ env:
 jobs:
   amd64:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
@@ -49,6 +52,9 @@ jobs:
 
   aarch64:
     runs-on: [self-hosted, arm64]
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
