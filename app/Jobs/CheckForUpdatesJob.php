@@ -56,6 +56,10 @@ class CheckForUpdatesJob implements ShouldBeEncrypted, ShouldQueue
             File::put(base_path('versions.json'), json_encode($versions, JSON_PRETTY_PRINT));
         } else {
             $settings->update(['new_version_available' => false]);
+            // Clear the versions.json file to prevent showing official versions
+            if (File::exists(base_path('versions.json'))) {
+                File::delete(base_path('versions.json'));
+            }
         }
     }
     

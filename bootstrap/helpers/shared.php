@@ -258,8 +258,8 @@ function getLatestVersionFromGitHub(): ?string
                         return ltrim($tag, 'v');
                     })
                     ->filter(function ($tag) {
-                        // Match semantic version pattern (e.g., 4.0.0-beta.419)
-                        return preg_match('/^\d+\.\d+\.\d+(-.*)?$/', $tag);
+                        // Match semantic version pattern OR custom insly versioning
+                        return preg_match('/^\d+\.\d+\.\d+(-.*)?$/', $tag) || preg_match('/^insly-.*/', $tag);
                     })
                     ->sort(function ($a, $b) {
                         return version_compare($b, $a); // Sort descending
