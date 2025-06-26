@@ -63,9 +63,19 @@ class UpdateCoolify
         
         instant_remote_process(["docker pull -q $image"], $this->server, false);
 
-        remote_process([
-            'curl -fsSL https://cdn.coollabs.io/coolify/upgrade.sh -o /data/coolify/source/upgrade.sh',
-            "bash /data/coolify/source/upgrade.sh $this->latestVersion",
-        ], $this->server);
+        // For custom registry, use docker compose directly instead of the official upgrade script
+        if (isUsingCustomRegistry()) {
+            remote_process([
+                "cd /data/coolify/source",
+                "docker compose -f docker-compose.yml -f docker-compose.prod.yml pull coolify",
+                "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d coolify --force-recreate",
+            ], $this->server);
+        } else {
+            // Use official upgrade script for official registry
+            remote_process([
+                'curl -fsSL https://cdn.coollabs.io/coolify/upgrade.sh -o /data/coolify/source/upgrade.sh',
+                "bash /data/coolify/source/upgrade.sh $this->latestVersion",
+            ], $this->server);
+        }
     }
 }
