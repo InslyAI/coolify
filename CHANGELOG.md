@@ -15,9 +15,11 @@ All notable changes to this project will be documented in this file.
 - Correct GitHub Container Registry image paths
 - Use full image path for GitHub Container Registry
 - Add container labels for proper GitHub registry linking
+- Remove subtitle from dashboard
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 - Update changelog
