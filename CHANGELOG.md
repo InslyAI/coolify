@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### 🐛 Bug Fixes
+
+- Correct GitHub Container Registry image paths
+
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 
 ### ⚙️ Miscellaneous Tasks
