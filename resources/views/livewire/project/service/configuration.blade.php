@@ -28,9 +28,11 @@
             <a class='menu-item' wire:current.exact="menu-item-active"
                 href="{{ route('project.service.tags', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}">Tags</a>
 
-            <a class='menu-item' wire:current.exact="menu-item-active"
-                href="{{ route('project.service.danger', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}">Danger
-                Zone</a>
+            @can('delete', $service)
+                <a class='menu-item' wire:current.exact="menu-item-active"
+                    href="{{ route('project.service.danger', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}">Danger
+                    Zone</a>
+            @endcan
         </div>
         <div class="w-full">
             @if ($currentRoute === 'project.service.configuration')

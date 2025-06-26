@@ -95,6 +95,18 @@ class Danger extends Component
             return;
         }
 
+        // Check if user has permission to delete this resource
+        if (method_exists($this->resource, 'type')) {
+            $resourceType = $this->resource->type();
+            if (in_array($resourceType, ['application', 'service'])) {
+                if (! Auth::user()->can('delete', $this->resource)) {
+                    $this->addError('resource', 'You do not have permission to delete this resource. Only administrators and owners can delete resources.');
+
+                    return;
+                }
+            }
+        }
+
         try {
             $this->resource->delete();
             DeleteResourceJob::dispatch(
