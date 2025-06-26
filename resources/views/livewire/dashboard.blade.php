@@ -6,7 +6,6 @@
         <span x-data x-init="$wire.emit('error', '{{ session('error') }}')" />
     @endif
     <h1>Dashboard</h1>
-    <div class="subtitle">Your self-hosted infrastructure.</div>
     @if (request()->query->get('success'))
         <div class=" mb-10 font-bold alert alert-success">
             Your subscription has been activated! Welcome onboard! It could take a few seconds before your
