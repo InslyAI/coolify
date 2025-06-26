@@ -2,7 +2,7 @@
 
 return [
     'coolify' => [
-        'version' => 'insly-beta.1',
+        'version' => 'insly-beta.2',
         'helper_version' => '1.0.8',
         'realtime_version' => '1.0.9',
         'self_hosted' => env('SELF_HOSTED', true),
