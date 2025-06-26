@@ -1,7 +1,16 @@
 <form class="flex flex-col w-full gap-2 rounded-sm" wire:submit='submit'>
-    <x-forms.input placeholder="0 0 * * * or daily" id="frequency"
-        helper="You can use every_minute, hourly, daily, weekly, monthly, yearly or a cron expression." label="Frequency"
-        required />
+    <x-forms.select id="frequency" label="Frequency" helper="Select a frequency or choose custom to enter a cron expression.">
+        <option value="every_minute">Every Minute</option>
+        <option value="hourly">Hourly</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+        <option value="custom">Custom</option>
+    </x-forms.select>
+    @if ($frequency === 'custom')
+        <x-forms.input placeholder="0 0 * * *" id="custom_frequency" label="Cron Expression" required />
+    @endif
     <h2>S3</h2>
     @if ($definedS3s->count() === 0)
         <div class="text-red-500">No validated S3 Storages found.</div>

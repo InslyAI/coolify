@@ -13,6 +13,9 @@ class CreateScheduledBackup extends Component
     #[Validate(['required', 'string'])]
     public $frequency;
 
+    #[Validate(['required_if:frequency,custom', 'string'])]
+    public $custom_frequency;
+
     #[Validate(['required', 'boolean'])]
     public bool $saveToS3 = false;
 
@@ -42,6 +45,10 @@ class CreateScheduledBackup extends Component
     {
         try {
             $this->validate();
+
+            if ($this->frequency === 'custom') {
+                $this->frequency = $this->custom_frequency;
+            }
 
             $isValid = validate_cron_expression($this->frequency);
             if (! $isValid) {
