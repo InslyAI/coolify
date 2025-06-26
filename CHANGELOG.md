@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Update changelog
+- Update changelog
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to insly-beta.4
 
 ## [insly-beta.2] - 2025-06-26
 
