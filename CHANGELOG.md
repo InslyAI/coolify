@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Add Linux-only build workflows
+- Make UI cards more square-shaped
 
 ### 🐛 Bug Fixes
 
@@ -16,6 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 - Update changelog
