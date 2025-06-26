@@ -19,7 +19,6 @@ on:
 
 env:
   GITHUB_REGISTRY: ghcr.io
-  DOCKER_REGISTRY: docker.io
   IMAGE_NAME: "kivilaid/coolify"
 
 jobs:
@@ -35,12 +34,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Login to ${{ env.DOCKER_REGISTRY }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
@@ -50,7 +43,6 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
   aarch64:
@@ -68,12 +60,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Login to ${{ env.DOCKER_REGISTRY }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
@@ -83,7 +69,6 @@ jobs:
           platforms: linux/aarch64
           push: true
           tags: |
-            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64
             ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64
 
   merge-manifest:
@@ -104,12 +89,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Login to ${{ env.DOCKER_REGISTRY }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Create & publish manifest on ${{ env.GITHUB_REGISTRY }}
         run: |
@@ -117,11 +96,6 @@ jobs:
          --append ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64 \
          --tag ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
-      - name: Create & publish manifest on ${{ env.DOCKER_REGISTRY }}
-        run: |
-          docker buildx imagetools create \
-          --append ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64 \
-          --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
