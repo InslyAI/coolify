@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Customize install script text for custom version
 - Rebrand Coolify to Insly
 - Remove Feedback and Sponsor us menu items
+- Remove Docker Hub dependency and update favicon
 
 ### 🐛 Bug Fixes
 
@@ -22,6 +23,10 @@ All notable changes to this project will be documented in this file.
 - Update install script messages and URLs for clarity
 - Update install script URLs for accuracy and consistency
 - Update Docker image registry to kivilaid/coolify
+
+### 📚 Documentation
+
+- Update changelog
 
 ## [4.0.0-beta.419-custom] - 2025-06-21
 
