@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
+- Enforce authorization policies for resource deletion
+
+### 📚 Documentation
+
+- Update changelog
+
+## [insly-beta.4] - 2025-06-26
+
+### 🐛 Bug Fixes
+
 - Upgrade dialog shows correct version for custom registries
 
 ### 📚 Documentation
