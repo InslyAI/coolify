@@ -199,6 +199,15 @@ function get_latest_sentinel_version(): string
 function get_latest_version_of_coolify(): string
 {
     try {
+        // For custom registries, get version from GitHub API
+        if (isUsingCustomRegistry()) {
+            $latestVersion = getLatestVersionFromGitHub();
+            if ($latestVersion) {
+                return $latestVersion;
+            }
+        }
+        
+        // For official registry or if GitHub API fails, use versions.json
         $versions = File::get(base_path('versions.json'));
         $versions = json_decode($versions, true);
 
