@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Add Linux-only build workflows
 - Make UI cards more square-shaped
 - Add custom Docker registry update checking
+- Change version numbering to insly-beta.1
 
 ### 🐛 Bug Fixes
 
@@ -19,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### 📚 Documentation
 
+- Update changelog
 - Update changelog
 - Update changelog
 - Update changelog
