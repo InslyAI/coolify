@@ -19,7 +19,7 @@ on:
 
 env:
   GITHUB_REGISTRY: ghcr.io
-  IMAGE_NAME: "kivilaid/coolify"
+  IMAGE_NAME: "coolify"
 
 jobs:
   amd64:
@@ -46,7 +46,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
   aarch64:
     runs-on: [self-hosted, arm64]
@@ -72,7 +72,7 @@ jobs:
           platforms: linux/aarch64
           push: true
           tags: |
-            ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64
+            ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64
 
   merge-manifest:
     runs-on: ubuntu-latest
@@ -96,8 +96,8 @@ jobs:
       - name: Create & publish manifest on ${{ env.GITHUB_REGISTRY }}
         run: |
          docker buildx imagetools create \
-         --append ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64 \
-         --tag ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+         --append ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-aarch64 \
+         --tag ${{ env.GITHUB_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
 
       - uses: sarisia/actions-status-discord@v1
