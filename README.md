@@ -6,11 +6,11 @@ Coolify is an open-source & self-hostable platform that lets you deploy applicat
 
 Coolify transforms any server with SSH access into a powerful Platform-as-a-Service (PaaS). It handles:
 
-- **Application Deployment**: Deploy from Git repositories, Docker images, or Docker Compose files
-- **Database Management**: Provision and manage PostgreSQL, MySQL, MongoDB, Redis, and more
-- **SSL Certificates**: Automatic SSL/TLS certificate generation and renewal
-- **Resource Monitoring**: Real-time monitoring of server resources and application health
-- **Team Collaboration**: Multi-user support with role-based access control
+-   **Application Deployment**: Deploy from Git repositories, Docker images, or Docker Compose files
+-   **Database Management**: Provision and manage PostgreSQL, MySQL, MongoDB, Redis, and more
+-   **SSL Certificates**: Automatic SSL/TLS certificate generation and renewal
+-   **Resource Monitoring**: Real-time monitoring of server resources and application health
+-   **Team Collaboration**: Multi-user support with role-based access control
 
 ## How it works
 
@@ -20,12 +20,6 @@ Coolify transforms any server with SSH access into a powerful Platform-as-a-Serv
 4. **Scale as Needed**: Add more servers and distribute your workloads as you grow
 
 No vendor lock-in - all configurations are stored on your servers, giving you complete control over your infrastructure.
-
-## Installation
-
-```bash
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
-```
 
 For detailed installation instructions and documentation, visit [coolify.io/docs](https://coolify.io/docs).
 
