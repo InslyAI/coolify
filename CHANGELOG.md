@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - Update changelog
 - Update changelog
 - Update README to enhance project description and installation instructions
+- Update changelog
+- Format README for improved readability and clarity
 
 ## [insly-beta.4] - 2025-06-26
 
