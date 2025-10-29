@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Policies\ApplicationPolicy;
 use App\Policies\ServicePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register gates for resource creation policy
+        Gate::define('createAnyResource', [ResourceCreatePolicy::class, 'createAny']);
+
+        // Register gate for terminal access
+        Gate::define('canAccessTerminal', function ($user) {
+            return $user->isAdmin() || $user->isOwner();
+        });
     }
 }

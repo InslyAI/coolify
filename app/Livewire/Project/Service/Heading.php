@@ -6,7 +6,6 @@ use App\Actions\Docker\GetContainersStatus;
 use App\Actions\Service\StartService;
 use App\Actions\Service\StopService;
 use App\Enums\ProcessStatus;
-use App\Events\ServiceStatusChanged;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -55,6 +54,11 @@ class Heading extends Component
         }
     }
 
+    public function manualCheckStatus()
+    {
+        $this->checkStatus();
+    }
+
     public function serviceChecked()
     {
         try {
@@ -64,7 +68,7 @@ class Heading extends Component
             $this->service->databases->each(function ($database) {
                 $database->refresh();
             });
-            if (is_null($this->service->config_hash) || $this->service->isConfigurationChanged()) {
+            if (is_null($this->service->config_hash)) {
                 $this->service->isConfigurationChanged(true);
             }
             $this->dispatch('configurationChanged');
@@ -96,7 +100,7 @@ class Heading extends Component
     public function start()
     {
         $activity = StartService::run($this->service, pullLatestImages: true);
-        $this->dispatch('activityMonitor', $activity->id, ServiceStatusChanged::class);
+        $this->dispatch('activityMonitor', $activity->id);
     }
 
     public function forceDeploy()
@@ -112,7 +116,7 @@ class Heading extends Component
                 $activity->save();
             }
             $activity = StartService::run($this->service, pullLatestImages: true, stopBeforeStart: true);
-            $this->dispatch('activityMonitor', $activity->id, ServiceStatusChanged::class);
+            $this->dispatch('activityMonitor', $activity->id);
         } catch (\Exception $e) {
             $this->dispatch('error', $e->getMessage());
         }
@@ -136,7 +140,7 @@ class Heading extends Component
             return;
         }
         $activity = StartService::run($this->service, stopBeforeStart: true);
-        $this->dispatch('activityMonitor', $activity->id, ServiceStatusChanged::class);
+        $this->dispatch('activityMonitor', $activity->id);
     }
 
     public function pullAndRestartEvent()
@@ -148,7 +152,7 @@ class Heading extends Component
             return;
         }
         $activity = StartService::run($this->service, pullLatestImages: true, stopBeforeStart: true);
-        $this->dispatch('activityMonitor', $activity->id, ServiceStatusChanged::class);
+        $this->dispatch('activityMonitor', $activity->id);
     }
 
     public function render()

@@ -3,6 +3,7 @@
 namespace App\Livewire\Project\Database;
 
 use App\Models\ScheduledDatabaseBackup;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class CreateScheduledBackup extends Component
 {
+    use AuthorizesRequests;
+
     #[Validate(['required', 'string'])]
     public $frequency;
 
@@ -44,6 +47,8 @@ class CreateScheduledBackup extends Component
     public function submit()
     {
         try {
+            $this->authorize('manageBackups', $this->database);
+
             $this->validate();
 
             if ($this->frequency === 'custom') {

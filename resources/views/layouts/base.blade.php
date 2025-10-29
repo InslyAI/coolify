@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<script>
+    // Immediate theme application - runs before any rendering
+    (function() {
+        const t = localStorage.theme || 'dark';
+        const d = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList[d ? 'add' : 'remove']('dark');
+    })();
+</script>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,6 +44,12 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/js/app.js', 'resources/css/app.css'])
+    <script>
+        // Update theme-color meta tag (non-critical, can run async)
+        const t = localStorage.theme || 'dark';
+        const isDark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.getElementById('theme-color-meta')?.setAttribute('content', isDark ? '#101010' : '#ffffff');
+    </script>
     <style>
         [x-cloak] {
             display: none !important;
@@ -50,6 +63,7 @@
         <script type="text/javascript" src="{{ URL::asset('js/echo.js') }}"></script>
         <script type="text/javascript" src="{{ URL::asset('js/pusher.js') }}"></script>
         <script type="text/javascript" src="{{ URL::asset('js/apexcharts.js') }}"></script>
+        <script type="text/javascript" src="{{ URL::asset('js/purify.min.js') }}"></script>
     @endauth
 </head>
 @section('body')
@@ -57,22 +71,75 @@
     <body>
         <x-toast />
         <script data-navigate-once>
+            // Global HTML sanitization function using DOMPurify
+            window.sanitizeHTML = function(html) {
+                if (!html) return '';
+                const URL_RE = /^(https?:|mailto:)/i;
+                const config = {
+                    ALLOWED_TAGS: ['a', 'b', 'br', 'code', 'del', 'div', 'em', 'i', 'p', 'pre', 's', 'span', 'strong',
+                        'u'
+                    ],
+                    ALLOWED_ATTR: ['class', 'href', 'target', 'title', 'rel'],
+                    ALLOW_DATA_ATTR: false,
+                    FORBID_TAGS: ['script', 'object', 'embed', 'applet', 'iframe', 'form', 'input', 'button', 'select',
+                        'textarea', 'details', 'summary', 'dialog', 'style'
+                    ],
+                    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange',
+                        'onsubmit', 'ontoggle', 'style'
+                    ],
+                    KEEP_CONTENT: true,
+                    RETURN_DOM: false,
+                    RETURN_DOM_FRAGMENT: false,
+                    SANITIZE_DOM: true,
+                    SANITIZE_NAMED_PROPS: true,
+                    SAFE_FOR_TEMPLATES: true,
+                    ALLOWED_URI_REGEXP: URL_RE
+                };
+
+                // One-time hook registration (idempotent pattern)
+                if (!window.__dpLinkHook) {
+                    DOMPurify.addHook('afterSanitizeAttributes', node => {
+                        // Remove Alpine.js directives to prevent XSS
+                        if (node.hasAttributes && node.hasAttributes()) {
+                            const attrs = Array.from(node.attributes);
+                            attrs.forEach(attr => {
+                                // Remove x-* attributes (Alpine directives)
+                                if (attr.name.startsWith('x-')) {
+                                    node.removeAttribute(attr.name);
+                                }
+                                // Remove @* attributes (Alpine event shorthand)
+                                if (attr.name.startsWith('@')) {
+                                    node.removeAttribute(attr.name);
+                                }
+                                // Remove :* attributes (Alpine binding shorthand)
+                                if (attr.name.startsWith(':')) {
+                                    node.removeAttribute(attr.name);
+                                }
+                            });
+                        }
+
+                        // Existing link sanitization
+                        if (node.nodeName === 'A' && node.hasAttribute('href')) {
+                            const href = node.getAttribute('href') || '';
+                            if (!URL_RE.test(href)) node.removeAttribute('href');
+                            if (node.getAttribute('target') === '_blank') {
+                                node.setAttribute('rel', 'noopener noreferrer');
+                            }
+                        }
+                    });
+                    window.__dpLinkHook = true;
+                }
+                return DOMPurify.sanitize(html, config);
+            };
+
+            // Initialize theme if not set
             if (!('theme' in localStorage)) {
                 localStorage.theme = 'dark';
-                document.documentElement.classList.add('dark')
-            } else if (localStorage.theme === 'dark') {
-                document.documentElement.classList.add('dark')
-            } else if (localStorage.theme === 'light') {
-                document.documentElement.classList.remove('dark')
-            } else {
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.documentElement.classList.add('dark')
-                } else {
-                    document.documentElement.classList.remove('dark')
-                }
             }
+
             let theme = localStorage.theme
-            let baseColor = '#FCD452'
+            let cpuColor = '#1e90ff'
+            let ramColor = '#00ced1'
             let textColor = '#ffffff'
             let editorBackground = '#181818'
             let editorTheme = 'blackboard'
@@ -83,12 +150,14 @@
                     theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
                 }
                 if (theme == 'dark') {
-                    baseColor = '#FCD452'
+                    cpuColor = '#1e90ff'
+                    ramColor = '#00ced1'
                     textColor = '#ffffff'
                     editorBackground = '#181818'
                     editorTheme = 'blackboard'
                 } else {
-                    baseColor = 'black'
+                    cpuColor = '#1e90ff'
+                    ramColor = '#00ced1'
                     textColor = '#000000'
                     editorBackground = '#ffffff'
                     editorTheme = null
